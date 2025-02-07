@@ -1,0 +1,41 @@
+# This is a basic workflow to help you get started with Actions
+
+name: kubebuilder4546
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+permissions:
+  packages: write
+  contents: read
+  attestations: write
+  id-token: write
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - run: docker version
+      - run: go mod init example.com/kubepusher
+      - run: kubebuilder init
+      - run: make docker-build docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
+      - name: add docker-build-load target
+        run: |
+          echo '.PHONY: docker-build
+          docker-build-load: test ## Build docker image with the manager.
+          docker build --load -t ${IMG} .
+          ' >> Makefile
+      - run: make docker-build-load docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
+      
