@@ -28,6 +28,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - run: docker version
+      - run: |
+          curl -L -o kubebuilder "https://go.kubebuilder.io/dl/latest/$(go env GOOS)/$(go env GOARCH)"
+          chmod +x kubebuilder && sudo mv kubebuilder /usr/local/bin/
       - run: go mod init example.com/kubepusher
       - run: kubebuilder init
       - run: make docker-build docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
