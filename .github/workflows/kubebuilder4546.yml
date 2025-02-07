@@ -40,7 +40,7 @@ jobs:
       - name: get docker version
         run: docker version
       - run: docker system prune --all --force
-      - run: docker buildx create --use
+      - run: docker buildx create --name=container --driver=docker-container --use --bootstrap
       - run: docker builder ls
       - run: |
           curl -L -o kubebuilder "https://go.kubebuilder.io/dl/latest/$(go env GOOS)/$(go env GOARCH)"
