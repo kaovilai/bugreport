@@ -58,13 +58,14 @@ jobs:
       - run: go mod init example.com/kubepusher
       - run: kubebuilder init && mkdir internal && mkdir api
       - run: make docker-build docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
-        continue-on-error: true
-      - name: add docker-build-load target
-        run: |
-          echo '
-          .PHONY: docker-build
-          docker-build-load: test ## Build docker image with the manager.
-          	docker build --load -t ${IMG} .
-          ' >> Makefile
-      - run: make docker-build-load docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
+      # Commenting out so it's explicitly ends here on failure to be super clear that docker-build on default scaffold has an issue, not buildx
+      #   continue-on-error: true
+      # - name: add docker-build-load target
+      #   run: |
+      #     echo '
+      #     .PHONY: docker-build
+      #     docker-build-load: test ## Build docker image with the manager.
+      #     	docker build --load -t ${IMG} .
+      #     ' >> Makefile
+      # - run: make docker-build-load docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
       
