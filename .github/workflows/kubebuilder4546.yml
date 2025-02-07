@@ -39,6 +39,7 @@ jobs:
           rm get-docker.sh
       - name: get docker version
         run: docker version
+      - run: docker buildx install
       - run: docker system prune --all --force
       - run: docker buildx create --name=container --driver=docker-container --use --bootstrap
       - run: docker builder ls
