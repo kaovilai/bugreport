@@ -17,7 +17,9 @@ permissions:
   contents: read
   attestations: write
   id-token: write
-
+env:
+  # Use docker.io for Docker Hub if empty
+  REGISTRY: ghcr.io
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -34,6 +36,14 @@ jobs:
       - run: |
           curl -L -o kubebuilder "https://go.kubebuilder.io/dl/latest/$(go env GOOS)/$(go env GOARCH)"
           chmod +x kubebuilder && sudo mv kubebuilder /usr/local/bin/
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
       - run: go mod init example.com/kubepusher
       - run: kubebuilder init && mkdir internal && mkdir api
       - run: make docker-build docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
