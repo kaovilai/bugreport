@@ -31,6 +31,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # probably not required
       - name: install latest docker
         run: |
           curl -fsSL https://get.docker.com -o get-docker.sh
@@ -39,8 +40,8 @@ jobs:
           rm get-docker.sh
       - name: get docker version
         run: docker version
+      # Make buildx the default build system
       - run: docker buildx install
-      - run: docker system prune --all --force
       - run: docker buildx create --name=container --driver=docker-container --use --bootstrap
       - run: docker builder ls
       - run: |
@@ -60,9 +61,10 @@ jobs:
         continue-on-error: true
       - name: add docker-build-load target
         run: |
-          echo '.PHONY: docker-build
+          echo '
+          .PHONY: docker-build
           docker-build-load: test ## Build docker image with the manager.
-          docker build --load -t ${IMG} .
+          	docker build --load -t ${IMG} .
           ' >> Makefile
       - run: make docker-build-load docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
       
