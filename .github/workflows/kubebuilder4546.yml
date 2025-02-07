@@ -35,6 +35,8 @@ jobs:
         run: |
           curl -fsSL https://get.docker.com -o get-docker.sh
           sh get-docker.sh
+          ls -la
+          rm get-docker.sh
       - name: get docker version
         run: docker version
       - run: docker system prune --all --force
@@ -53,6 +55,7 @@ jobs:
       - run: go mod init example.com/kubepusher
       - run: kubebuilder init && mkdir internal && mkdir api
       - run: make docker-build docker-push IMG=ghcr.io/kaovilai/bugreport:kubebuilder4546
+        continue-on-error: true
       - name: add docker-build-load target
         run: |
           echo '.PHONY: docker-build
